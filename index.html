@@ -17,10 +17,23 @@
         <main>
             <div class="series-info">
                 <h2>Сериал "СашаТаня"</h2>
+                <p class="series-description">Выберите сезон для просмотра</p>
             </div>
 
-            <div class="seasons-container" id="seasonsContainer">
+            <!-- Список сезонов -->
+            <div class="seasons-list" id="seasonsList">
                 <!-- Сезоны будут загружены из all.js -->
+            </div>
+
+            <!-- Список серий (изначально скрыт) -->
+            <div class="episodes-section" id="episodesSection" style="display: none;">
+                <button class="back-to-seasons" id="backToSeasonsBtn">
+                    ← Назад к сезонам
+                </button>
+                <div class="current-season-title" id="currentSeasonTitle"></div>
+                <div class="episodes-grid" id="episodesGrid">
+                    <!-- Серии будут загружены динамически -->
+                </div>
             </div>
         </main>
     </div>
