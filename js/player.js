@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const episodeTitle = document.getElementById('episodeTitle');
     const downloadBtn = document.getElementById('downloadBtn');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const backBtn = document.querySelector('.back-btn');
     
     let currentEpisodeData = null;
     let saveTimeout = null;
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hours > 0) {
             timeString = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         } else {
-            timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            timeString = `${minutes}:${seconds.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
         
         const notification = document.createElement('div');
@@ -205,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Обработка ошибок
         videoPlayer.addEventListener('error', () => {
-            episodeTitle.innerHTML += '<br><span style="color: #ff6b6b;">⚠️ Видео не найдено</span>';
+            episodeTitle.innerHTML += '<br><span style="color: #ff6b6b;">⚠️ Видео не найдено. Убедитесь, что файл загружен в папку film/seas' + season + '/</span>';
             downloadBtn.disabled = true;
             copyLinkBtn.disabled = true;
         });
@@ -214,11 +215,14 @@ document.addEventListener('DOMContentLoaded', () => {
         videoPlayer.addEventListener('loadedmetadata', () => {
             if (startTime !== null && startTime > 0) {
                 videoPlayer.currentTime = startTime;
+                videoPlayer.play();
             } else {
                 // Проверяем сохраненный прогресс
                 const savedProgress = getSavedProgress(season, episode);
                 if (savedProgress && savedProgress.time > 5) { // Если остановились после 5 секунд
                     showResumeNotification(savedProgress);
+                } else {
+                    videoPlayer.play();
                 }
             }
         });
@@ -227,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         videoPlayer.addEventListener('timeupdate', () => {
             if (saveTimeout) clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => {
-                if (videoPlayer.currentTime > 0) {
+                if (videoPlayer.currentTime > 0 && videoPlayer.currentTime < videoPlayer.duration - 5) {
                     saveProgress(season, episode, videoPlayer.currentTime);
                 }
             }, 5000);
@@ -235,10 +239,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Сохраняем прогресс при закрытии/перезагрузке
         window.addEventListener('beforeunload', () => {
-            if (videoPlayer.currentTime > 0) {
+            if (videoPlayer.currentTime > 0 && videoPlayer.currentTime < videoPlayer.duration - 5) {
                 saveProgress(season, episode, videoPlayer.currentTime);
             }
         });
+        
+        // Сохраняем прогресс при паузе
+        videoPlayer.addEventListener('pause', () => {
+            if (videoPlayer.currentTime > 0 && videoPlayer.currentTime < videoPlayer.duration - 5) {
+                saveProgress(season, episode, videoPlayer.currentTime);
+            }
+        });
+    }
+    
+    // Функция возврата к сезонам
+    function goBackToSeasons() {
+        localStorage.removeItem('currentEpisode');
+        window.location.href = 'index.html';
     }
     
     // Основная логика
@@ -259,7 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Обновляем URL без перезагрузки
                 const newUrl = `${window.location.pathname}?season=${seasonNum}&episode=${episodeNum}`;
                 window.history.pushState({}, '', newUrl);
+            } else {
+                episodeTitle.textContent = 'Ошибка: серия не найдена';
+                setTimeout(() => goBackToSeasons(), 2000);
             }
+        } else {
+            episodeTitle.textContent = 'Ошибка: сезон не найден';
+            setTimeout(() => goBackToSeasons(), 2000);
         }
     } else {
         // Если нет параметров, берем из localStorage
@@ -269,24 +292,53 @@ document.addEventListener('DOMContentLoaded', () => {
             loadVideo(episode.season, episode.episode, episode.file, episode.title);
         } else {
             episodeTitle.textContent = 'Ошибка: серия не выбрана';
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 2000);
+            setTimeout(() => goBackToSeasons(), 2000);
         }
     }
     
+    // Обработчик кнопки "Назад"
+    if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            goBackToSeasons();
+        });
+    }
+    
     // Обработчик кнопки скачивания
-    downloadBtn.addEventListener('click', () => {
-        if (currentEpisodeData) {
-            const videoPath = `film/seas${currentEpisodeData.season}/${currentEpisodeData.file}`;
-            const link = document.createElement('a');
-            link.href = videoPath;
-            link.download = `${currentEpisodeData.season}_series_${currentEpisodeData.episode}.mp4`;
-            link.click();
-            showNotification('📥 Скачивание началось...');
-        }
-    });
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            if (currentEpisodeData) {
+                const videoPath = `film/seas${currentEpisodeData.season}/${currentEpisodeData.file}`;
+                const link = document.createElement('a');
+                link.href = videoPath;
+                link.download = `${currentEpisodeData.season}_series_${currentEpisodeData.episode}.mp4`;
+                link.click();
+                showNotification('📥 Скачивание началось...');
+            }
+        });
+    }
     
     // Обработчик кнопки копирования ссылки
-    copyLinkBtn.addEventListener('click', copyLinkWithTimestamp);
+    if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', copyLinkWithTimestamp);
+    }
+    
+    // Добавляем эффект ripple для кнопок
+    function addRippleEffect(element) {
+        element.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size/2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size/2}px`;
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    }
+    
+    // Добавляем ripple эффект на все кнопки
+    const buttons = document.querySelectorAll('.download-btn, .copy-btn, .back-btn');
+    buttons.forEach(btn => addRippleEffect(btn));
 });
