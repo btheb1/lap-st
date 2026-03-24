@@ -74,54 +74,144 @@ h1 {
     margin-right: auto;
 }
 
-/* ===== КАРТОЧКИ СЕЗОНОВ ===== */
-.season-card {
-    background: #141414;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 30px;
-    border: 1px solid #2a2a2a;
-    transition: all 0.3s ease;
+/* ===== СПИСОК СЕЗОНОВ ===== */
+.seasons-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
     animation: fadeInUp 0.5s ease-out;
 }
 
-.season-card:hover {
-    border-color: #6c5ce7;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(108, 92, 231, 0.1);
-}
-
-.season-header {
+.season-card-select {
+    background: linear-gradient(135deg, #141414 0%, #1a1a1a 100%);
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 10px;
+    position: relative;
+    overflow: hidden;
 }
 
-.season-title {
-    font-size: 1.6rem;
-    font-weight: 600;
+.season-card-select::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(108, 92, 231, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.season-card-select:hover::before {
+    left: 100%;
+}
+
+.season-card-select:hover {
+    border-color: #6c5ce7;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+}
+
+.season-card-content {
+    flex: 1;
+}
+
+.season-number {
+    font-size: 1.5rem;
+    font-weight: bold;
     color: #6c5ce7;
-    margin: 0;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
 }
 
-.season-year {
+.season-info {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.season-year, .episodes-count {
+    font-size: 0.85rem;
     color: #888;
-    font-size: 0.9rem;
     background: #1e1e1e;
     padding: 4px 12px;
     border-radius: 20px;
 }
 
-.episodes-count {
+.progress-indicator {
+    margin-top: 12px;
+    font-size: 0.8rem;
     color: #6c5ce7;
-    font-size: 0.85rem;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #2a2a2a;
     display: inline-block;
+    background: rgba(108, 92, 231, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.season-arrow {
+    font-size: 2rem;
+    color: #6c5ce7;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.season-card-select:hover .season-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ===== СЕКЦИЯ СЕРИЙ ===== */
+.episodes-section {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.back-to-seasons {
+    background: #1e1e1e;
+    color: #6c5ce7;
+    border: 1px solid #2a2a2a;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.back-to-seasons:hover {
+    background: #6c5ce7;
+    color: white;
+    transform: translateX(-5px);
+}
+
+.current-season-title {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #141414;
+    border-radius: 16px;
+    border: 1px solid #2a2a2a;
+}
+
+.current-season-title h3 {
+    font-size: 1.8rem;
+    color: #6c5ce7;
+    margin-bottom: 8px;
+}
+
+.current-season-title p {
+    color: #888;
+    font-size: 0.9rem;
 }
 
 /* ===== СЕТКА СЕРИЙ ===== */
@@ -131,11 +221,11 @@ h1 {
     gap: 16px;
 }
 
-.episode-btn {
+.episode-card {
     background: #1e1e1e;
     border: 1px solid #2e2e2e;
     color: #e0e0e0;
-    padding: 14px 12px;
+    padding: 16px;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -144,7 +234,7 @@ h1 {
     overflow: hidden;
 }
 
-.episode-btn::before {
+.episode-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -155,58 +245,65 @@ h1 {
     transition: left 0.5s ease;
 }
 
-.episode-btn:hover::before {
+.episode-card:hover::before {
     left: 100%;
 }
 
-.episode-btn:hover {
+.episode-card:hover {
     background: #6c5ce7;
     border-color: #6c5ce7;
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
-.episode-number {
+.episode-card .episode-number {
     font-weight: bold;
-    font-size: 1rem;
-    margin-bottom: 6px;
-}
-
-.episode-title {
-    font-size: 0.85rem;
-    color: #aaa;
-    margin-bottom: 6px;
-    transition: color 0.3s ease;
-}
-
-.episode-duration {
-    font-size: 0.7rem;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
     color: #6c5ce7;
-    font-family: monospace;
 }
 
-.episode-btn:hover .episode-title {
+.episode-card:hover .episode-number {
     color: white;
 }
 
-.episode-btn:hover .episode-duration {
-    color: #fff;
+.episode-card .episode-title {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 8px;
 }
 
-/* Индикатор прогресса на кнопках */
-.episode-btn.has-progress {
+.episode-card:hover .episode-title {
+    color: white;
+}
+
+.episode-card .episode-duration {
+    font-size: 0.75rem;
+    color: #888;
+    font-family: monospace;
+}
+
+.episode-card:hover .episode-duration {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.episode-progress {
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: #6c5ce7;
+    background: rgba(108, 92, 231, 0.2);
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.episode-card.has-progress {
     border-color: #6c5ce7;
     background: #1e1a2f;
-    box-shadow: 0 0 8px rgba(108, 92, 231, 0.3);
 }
 
-.progress-icon {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    font-size: 10px;
+.episode-card.has-progress .episode-number {
     color: #6c5ce7;
-    animation: pulse 2s infinite;
 }
 
 /* ===== СТРАНИЦА ПЛЕЕРА ===== */
@@ -548,6 +645,13 @@ video::-webkit-media-controls-time-remaining-display {
     }
 }
 
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
 /* ===== СКРОЛЛБАР ===== */
 ::-webkit-scrollbar {
     width: 10px;
@@ -587,21 +691,47 @@ video::-webkit-media-controls-time-remaining-display {
         font-size: 1.4rem;
     }
     
+    .seasons-list {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .season-card-select {
+        padding: 20px;
+    }
+    
+    .season-number {
+        font-size: 1.3rem;
+    }
+    
+    .season-arrow {
+        font-size: 1.5rem;
+    }
+    
     .episodes-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
         gap: 12px;
     }
     
-    .episode-btn {
-        padding: 12px 10px;
+    .episode-card {
+        padding: 14px;
     }
     
-    .episode-number {
-        font-size: 0.9rem;
+    .episode-card .episode-number {
+        font-size: 1rem;
     }
     
-    .episode-title {
-        font-size: 0.75rem;
+    .episode-card .episode-title {
+        font-size: 0.85rem;
+    }
+    
+    .current-season-title h3 {
+        font-size: 1.4rem;
+    }
+    
+    .back-to-seasons {
+        width: 100%;
+        justify-content: center;
     }
     
     .player-header {
@@ -634,16 +764,6 @@ video::-webkit-media-controls-time-remaining-display {
     
     .resume-buttons, .copy-buttons {
         flex-direction: column;
-    }
-    
-    .season-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    
-    .season-title {
-        font-size: 1.3rem;
     }
     
     .notification {
@@ -685,32 +805,44 @@ video::-webkit-media-controls-time-remaining-display {
         font-size: 0.85rem;
     }
     
+    .season-card-select {
+        padding: 16px;
+    }
+    
+    .season-number {
+        font-size: 1.2rem;
+    }
+    
+    .season-year, .episodes-count {
+        font-size: 0.75rem;
+    }
+    
     .episodes-grid {
         grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
         gap: 10px;
     }
     
-    .episode-btn {
-        padding: 10px 8px;
+    .episode-card {
+        padding: 12px;
     }
     
-    .episode-number {
-        font-size: 0.85rem;
+    .episode-card .episode-number {
+        font-size: 0.9rem;
     }
     
-    .episode-title {
+    .episode-card .episode-title {
+        font-size: 0.8rem;
+    }
+    
+    .episode-card .episode-duration {
         font-size: 0.7rem;
     }
     
-    .episode-duration {
-        font-size: 0.65rem;
+    .current-season-title {
+        padding: 15px;
     }
     
-    .season-card {
-        padding: 16px;
-    }
-    
-    .season-title {
+    .current-season-title h3 {
         font-size: 1.2rem;
     }
     
@@ -731,12 +863,6 @@ video::-webkit-media-controls-time-remaining-display {
         padding: 10px;
         font-size: 0.85rem;
     }
-    
-    .progress-icon {
-        top: 5px;
-        right: 5px;
-        font-size: 8px;
-    }
 }
 
 /* Десктопы с большим экраном */
@@ -750,8 +876,8 @@ video::-webkit-media-controls-time-remaining-display {
         gap: 20px;
     }
     
-    .episode-btn {
-        padding: 16px;
+    .episode-card {
+        padding: 20px;
     }
     
     video {
@@ -761,10 +887,12 @@ video::-webkit-media-controls-time-remaining-display {
 
 /* ===== ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ ===== */
 /* Эффект свечения для активных элементов */
-.episode-btn:focus, 
+.episode-card:focus, 
 .download-btn:focus, 
 .copy-btn:focus,
-.back-btn:focus {
+.back-btn:focus,
+.back-to-seasons:focus,
+.season-card-select:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.4);
 }
@@ -812,7 +940,7 @@ select:focus, input:focus {
 }
 
 /* Эффект ripple для кнопок */
-.download-btn, .copy-btn, .episode-btn {
+.download-btn, .copy-btn, .episode-card, .season-card-select {
     position: relative;
     overflow: hidden;
 }
@@ -824,11 +952,4 @@ select:focus, input:focus {
     transform: scale(0);
     animation: ripple 0.6s linear;
     pointer-events: none;
-}
-
-@keyframes ripple {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
 }
