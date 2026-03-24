@@ -15,10 +15,10 @@ const episodesData = {
                     duration: "23:08", 
                     description: "Первая серия",
                     qualities: {
-                        "1080p": { file: "ser01_1080p.mp4", size: "850 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_1080p" },
-                        "720p": { file: "ser01_720p.mp4", size: "450 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_720p" },
-                        "480p": { file: "ser01_480p.mp4", size: "250 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_480p" },
-                        "360p": { file: "seas01_ser01_360p.mp4", size: "101 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_360p" },
+                        "1080p": { file: "seas01_ser01_1080p.mp4", size: "850 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_1080p" },
+                        "720p": { file: "seas01_ser01_720p.mp4", size: "450 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_720p" },
+                        "480p": { file: "seas01_ser01_480p.mp4", size: "250 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_480p" },
+                        "360p": { file: "seas01_ser01_360p.mp4", size: "101 MB", path: "https://drive.google.com/uc?export=download&id=17CetDaNyKIHyDvratPkxdgOJ44Pvh17G" },
                         "240p": { file: "seas01_ser01_240p.mp4", size: "59.3 MB", path: "https://drive.google.com/uc?export=download&id=1FOG_AuESc-KvuhU-D343fAPubdFj_aXW" }
                     }
                 },
@@ -47,7 +47,7 @@ const episodesData = {
         {
             season: 2,
             title: "Второй сезон",
-            year: 2024,
+            year: 2015,
             episodes: [
                 { 
                     number: 1, 
