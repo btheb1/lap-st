@@ -16,7 +16,7 @@ const episodesData = {
                     description: "Первая серия",
                     qualities: {
                         "1080p": { file: "seas01_ser01_1080p.mp4", size: "859 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_1080p" },
-                        "720p": { file: "seas01_ser01_720p.mp4", size: "446 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_720p" },
+                        "720p": { file: "seas01_ser01_720p.mp4", size: "446 MB", path: "https://drive.google.com/uc?export=download&id=1kdAH_M87qJ3pqtF01BJnQNgNkFYj8at_" },
                         "480p": { file: "seas01_ser01_480p.mp4", size: "191 MB", path: "https://drive.google.com/uc?export=download&id=194BDtu4AAQ1Jd-fIklv9Zy0nR0Q-GOvA" },
                         "360p": { file: "seas01_ser01_360p.mp4", size: "101 MB", path: "https://drive.google.com/uc?export=download&id=17CetDaNyKIHyDvratPkxdgOJ44Pvh17G" },
                         "240p": { file: "seas01_ser01_240p.mp4", size: "59.3 MB", path: "https://drive.google.com/uc?export=download&id=1FOG_AuESc-KvuhU-D343fAPubdFj_aXW" }
