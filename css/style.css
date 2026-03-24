@@ -1279,3 +1279,145 @@ input:checked + .slider:before {
         text-align: center;
     }
 }
+
+/* ===== НАВИГАЦИОННЫЕ КНОПКИ ===== */
+.navigation-panel {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #2a2a2a;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.prev-btn {
+    background: #2c2c2c;
+    color: #e0e0e0;
+}
+
+.prev-btn:hover:not(:disabled) {
+    background: #6c5ce7;
+    transform: translateX(-3px);
+}
+
+.next-btn {
+    background: #2c2c2c;
+    color: #e0e0e0;
+}
+
+.next-btn:hover:not(:disabled) {
+    background: #6c5ce7;
+    transform: translateX(3px);
+}
+
+.catalog-btn {
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    color: white;
+}
+
+.catalog-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .nav-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+}/* ===== НАВИГАЦИОННЫЕ КНОПКИ ===== */
+.navigation-panel {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #2a2a2a;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.prev-btn {
+    background: #2c2c2c;
+    color: #e0e0e0;
+}
+
+.prev-btn:hover:not(:disabled) {
+    background: #6c5ce7;
+    transform: translateX(-3px);
+}
+
+.next-btn {
+    background: #2c2c2c;
+    color: #e0e0e0;
+}
+
+.next-btn:hover:not(:disabled) {
+    background: #6c5ce7;
+    transform: translateX(3px);
+}
+
+.catalog-btn {
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    color: white;
+}
+
+.catalog-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .nav-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+}
