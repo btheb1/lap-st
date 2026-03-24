@@ -7,54 +7,42 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const allSeasons = episodesData.getAllSeasons();
     
-    // Отображаем информацию о сериале
     const seriesInfo = document.querySelector('.series-info h2');
     if (seriesInfo) {
         seriesInfo.textContent = `Сериал "${episodesData.title}"`;
     }
     
-    // Функция для получения диапазона качеств
+    // Функция для получения диапазона качеств (минимальное-максимальное)
     function getQualityRange(qualities) {
         if (!qualities || Object.keys(qualities).length === 0) return null;
         
-        const qualityOrder = {
-            "2160p": 2160,
-            "1440p": 1440,
-            "1080p": 1080,
-            "720p": 720,
-            "480p": 480,
-            "360p": 360,
-            "240p": 240
-        };
+        const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p", "240p"];
         
-        const availableQualities = Object.keys(qualities);
-        
-        // Находим минимальное и максимальное качество
         let minQuality = null;
         let maxQuality = null;
-        let minValue = Infinity;
-        let maxValue = -Infinity;
+        let minIndex = Infinity;
+        let maxIndex = -Infinity;
         
-        availableQualities.forEach(q => {
-            const value = qualityOrder[q];
-            if (value) {
-                if (value < minValue) {
-                    minValue = value;
+        Object.keys(qualities).forEach(q => {
+            const index = qualityOrder.indexOf(q);
+            if (index !== -1) {
+                if (index < minIndex) {
+                    minIndex = index;
                     minQuality = q;
                 }
-                if (value > maxValue) {
-                    maxValue = value;
+                if (index > maxIndex) {
+                    maxIndex = index;
                     maxQuality = q;
                 }
             }
         });
         
         if (minQuality && maxQuality) {
-            // Если минимальное и максимальное одинаковые, показываем одно качество
             if (minQuality === maxQuality) {
-                return minQuality;
+                // Берем только число из качества (убераем p)
+                const num = minQuality.replace('p', '');
+                return num;
             }
-            // Иначе показываем диапазон
             const minNum = minQuality.replace('p', '');
             const maxNum = maxQuality.replace('p', '');
             return `${minNum}-${maxNum}`;
@@ -113,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         episodesGrid.innerHTML = '';
         
         season.episodes.forEach(ep => {
-            // Проверяем прогресс
             const progressKey = `progress_${season.season}_${ep.number}`;
             const savedProgress = localStorage.getItem(progressKey);
             const hasProgress = savedProgress && JSON.parse(savedProgress).time > 10;
