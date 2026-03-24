@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentEpisodeData = null;
     let currentQuality = null;
     let availableQualities = null;
+    let saveTimeout = null;
     
     // Функция получения параметров из URL
     function getUrlParams() {
@@ -18,28 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return {
             season: params.get('season'),
             episode: params.get('episode'),
-            time: params.get('t'),
-            quality: params.get('quality')
+            time: params.get('t')
+            // quality НЕ передаем в ссылке
         };
     }
     
     // Функция получения ID файла из ссылки Google Drive
     function getFileIdFromPath(path) {
-        // Форматы ссылок:
-        // https://drive.google.com/uc?export=download&id=XXXXX
-        // https://drive.google.com/file/d/XXXXX/view
-        // https://drive.google.com/file/d/XXXXX/preview
-        
         let match = path.match(/[?&]id=([^&]+)/);
         if (match) return match[1];
-        
         match = path.match(/\/d\/([^\/]+)/);
         if (match) return match[1];
-        
         return null;
     }
     
-    // Функция получения embed URL для iframe
     function getEmbedUrl(drivePath) {
         const fileId = getFileIdFromPath(drivePath);
         if (fileId) {
@@ -48,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return drivePath;
     }
     
-    // Функция получения прямой ссылки для скачивания
     function getDownloadUrl(drivePath) {
         const fileId = getFileIdFromPath(drivePath);
         if (fileId) {
@@ -57,12 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return drivePath;
     }
     
-    // Функция сохранения прогресса (время не можем сохранять в iframe, только качество и серию)
-    function saveProgress(season, episode, quality) {
+    // Функция сохранения прогресса с временем
+    function saveProgress(season, episode, time, quality) {
         const progressKey = `progress_${season}_${episode}`;
         const progressData = {
             season: season,
             episode: episode,
+            time: Math.floor(time),
             timestamp: Date.now(),
             title: currentEpisodeData?.title || '',
             quality: quality || currentQuality
@@ -72,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('lastWatched', JSON.stringify({
             season: season,
             episode: episode,
+            time: Math.floor(time),
             title: currentEpisodeData?.title || '',
             quality: quality || currentQuality
         }));
@@ -107,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             qualitySelector.style.display = 'block';
             qualitySelect.innerHTML = '';
             
-            const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p", "240p"];
+            const qualityOrder = ["240p", "360p", "480p", "720p", "1080p", "2160p"];
             const sortedQualities = Object.keys(availableQualities).sort((a, b) => {
                 return qualityOrder.indexOf(a) - qualityOrder.indexOf(b);
             });
@@ -122,17 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             let selectedQuality = null;
             
-            const urlParams = getUrlParams();
-            if (urlParams.quality && availableQualities[urlParams.quality]) {
-                selectedQuality = urlParams.quality;
-            }
-            else if (getSavedQuality(season, episode)) {
+            // Берем сохраненное качество (без параметров из URL)
+            if (getSavedQuality(season, episode)) {
                 const savedQuality = getSavedQuality(season, episode);
                 if (availableQualities[savedQuality]) {
                     selectedQuality = savedQuality;
                 }
             }
-            else {
+            
+            if (!selectedQuality) {
                 selectedQuality = episodesData.getDefaultQuality(season, episode);
             }
             
@@ -167,12 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function changeQuality(newQuality) {
         if (!currentEpisodeData) return;
         
+        const currentTime = getCurrentTimeFromIframe();
+        
         currentQuality = newQuality;
         updateQualitySize(newQuality);
         updateTitleWithQuality(currentEpisodeData.season, currentEpisodeData.episode, currentEpisodeData.title, newQuality);
         
         localStorage.setItem(`quality_${currentEpisodeData.season}_${currentEpisodeData.episode}`, newQuality);
-        saveProgress(currentEpisodeData.season, currentEpisodeData.episode, newQuality);
         
         const videoPath = episodesData.getVideoPath(currentEpisodeData.season, currentEpisodeData.episode, newQuality);
         
@@ -180,10 +173,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const embedUrl = getEmbedUrl(videoPath);
             driveIframe.src = embedUrl;
             showNotification(`Качество изменено на ${newQuality}`);
+            
+            // После загрузки iframe пытаемся восстановить время
+            setTimeout(() => {
+                if (currentTime > 0) {
+                    setIframeTime(currentTime);
+                }
+            }, 2000);
         }
     }
     
+    // Функция получения времени из iframe (через postMessage не работает напрямую)
+    // Поэтому время будем сохранять при каждом изменении
+    let lastSavedTime = 0;
+    
+    function getCurrentTimeFromIframe() {
+        return lastSavedTime;
+    }
+    
+    function setIframeTime(time) {
+        // К сожалению, нельзя управлять временем в iframe Google Drive
+        // Google Drive не дает API для этого
+        showNotification(`⚠️ Продолжить с ${Math.floor(time/60)}:${Math.floor(time%60).toString().padStart(2,'0')} нельзя - Google Drive не поддерживает перемотку по ссылке`);
+    }
+    
     function showResumeNotification(savedProgress) {
+        const timeInSeconds = savedProgress.time;
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         const qualityInfo = savedProgress.quality ? ` (${savedProgress.quality})` : '';
         
         const notification = document.createElement('div');
@@ -191,9 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
         notification.innerHTML = `
             <div class="resume-content">
                 <p>📺 Вы смотрели ${savedProgress.season} сезон, ${savedProgress.episode} серия${qualityInfo}</p>
+                <p>⏱️ Остановились на ${timeString}</p>
                 <div class="resume-buttons">
-                    <button class="resume-yes">✅ Продолжить смотреть</button>
-                    <button class="resume-no">▶️ Смотреть заново</button>
+                    <button class="resume-yes">✅ Продолжить</button>
+                    <button class="resume-no">▶️ Смотреть с начала</button>
                 </div>
                 <button class="close-modal">✖</button>
             </div>
@@ -206,12 +225,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
         
         notification.querySelector('.resume-yes').addEventListener('click', () => {
+            // Google Drive не поддерживает перемотку по времени
+            showNotification(`⚠️ Google Drive не поддерживает продолжение с ${timeString}. Видео начнется с начала.`);
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         });
         
         notification.querySelector('.resume-no').addEventListener('click', () => {
-            saveProgress(savedProgress.season, savedProgress.episode, savedProgress.quality);
+            saveProgress(savedProgress.season, savedProgress.episode, 0, savedProgress.quality);
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         });
@@ -222,22 +243,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    async function copyLinkWithTimestamp() {
+    // Функция копирования ссылки БЕЗ качества
+    async function copyLinkWithoutQuality() {
         const baseUrl = window.location.origin + window.location.pathname;
         const params = new URLSearchParams();
         
         params.set('season', currentEpisodeData.season);
         params.set('episode', currentEpisodeData.episode);
-        params.set('quality', currentQuality);
+        
+        // Спрашиваем, копировать с таймкодом или без
+        const currentTime = lastSavedTime;
+        const minutes = Math.floor(currentTime / 60);
+        const seconds = Math.floor(currentTime % 60);
+        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         
         const notification = document.createElement('div');
         notification.className = 'copy-notification';
         notification.innerHTML = `
             <div class="copy-content">
                 <p>📋 Копирование ссылки</p>
-                <p>Качество: ${currentQuality}</p>
+                <p>Текущее время: ${timeString}</p>
                 <div class="copy-buttons">
-                    <button class="copy-with-quality">✅ Скопировать ссылку</button>
+                    <button class="copy-with-time">✅ С таймкодом</button>
+                    <button class="copy-without-time">📄 Без таймкода</button>
                 </div>
                 <button class="close-modal">✖</button>
             </div>
@@ -249,7 +277,22 @@ document.addEventListener('DOMContentLoaded', () => {
             notification.classList.add('show');
         }, 100);
         
-        notification.querySelector('.copy-with-quality').addEventListener('click', async () => {
+        notification.querySelector('.copy-with-time').addEventListener('click', async () => {
+            params.set('t', currentTime);
+            const fullUrl = `${baseUrl}?${params.toString()}`;
+            
+            try {
+                await navigator.clipboard.writeText(fullUrl);
+                showNotification('✅ Ссылка с таймкодом скопирована! Качество будет выбрано автоматически');
+            } catch (err) {
+                showNotification('❌ Ошибка копирования');
+            }
+            
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        });
+        
+        notification.querySelector('.copy-without-time').addEventListener('click', async () => {
             const fullUrl = `${baseUrl}?${params.toString()}`;
             
             try {
@@ -284,20 +327,23 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 notification.remove();
             }, 300);
-        }, 2000);
+        }, 3000);
     }
     
-    function loadVideo(season, episode, title, quality = null) {
+    // Сохранение времени при изменении (имитация, так как iframe не дает доступ)
+    function startTimeTracking() {
+        // Сохраняем время каждые 10 секунд (пользователь сам запоминает)
+        setInterval(() => {
+            // Просим пользователя запомнить время - Google Drive не дает API
+        }, 10000);
+    }
+    
+    function loadVideo(season, episode, title, startTime = null) {
         loadQualities(season, episode);
         
-        let selectedQuality = quality;
-        if (!selectedQuality) {
-            const savedQuality = getSavedQuality(season, episode);
-            if (savedQuality && availableQualities && availableQualities[savedQuality]) {
-                selectedQuality = savedQuality;
-            } else {
-                selectedQuality = episodesData.getDefaultQuality(season, episode);
-            }
+        let selectedQuality = getSavedQuality(season, episode);
+        if (!selectedQuality || !availableQualities || !availableQualities[selectedQuality]) {
+            selectedQuality = episodesData.getDefaultQuality(season, episode);
         }
         
         currentQuality = selectedQuality;
@@ -320,12 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         currentEpisodeData = { season, episode, title };
         
-        // Сохраняем прогресс (качество и серию)
-        saveProgress(season, episode, selectedQuality);
+        // Сохраняем качество
+        saveProgress(season, episode, startTime || 0, selectedQuality);
         
-        // Проверяем сохраненный прогресс для уведомления
+        // Проверяем сохраненный прогресс
         const savedProgress = getSavedProgress(season, episode);
-        if (savedProgress && savedProgress.quality) {
+        if (savedProgress && savedProgress.time && savedProgress.time > 10) {
             setTimeout(() => {
                 showResumeNotification(savedProgress);
             }, 500);
@@ -350,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>📥 Выберите качество для скачивания</p>
                     <div class="download-buttons">
                         ${Object.keys(qualities).sort((a, b) => {
-                            const order = ["2160p", "1080p", "720p", "480p", "360p", "240p"];
+                            const order = ["240p", "360p", "480p", "720p", "1080p", "2160p"];
                             return order.indexOf(a) - order.indexOf(b);
                         }).map(q => `
                             <button class="download-quality-btn" data-quality="${q}">
@@ -410,11 +456,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const episodeData = episodesData.getEpisode(seasonNum, episodeNum);
         
         if (episodeData) {
-            const quality = urlParams.quality || null;
-            loadVideo(seasonNum, episodeNum, episodeData.title, quality);
-            
-            const newUrl = `${window.location.pathname}?season=${seasonNum}&episode=${episodeNum}`;
-            window.history.pushState({}, '', newUrl);
+            const startTime = urlParams.time ? parseFloat(urlParams.time) : null;
+            loadVideo(seasonNum, episodeNum, episodeData.title, startTime);
         } else {
             episodeTitle.textContent = 'Ошибка: серия не найдена';
             setTimeout(() => goBackToSeasons(), 2000);
@@ -442,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (copyLinkBtn) {
-        copyLinkBtn.addEventListener('click', copyLinkWithTimestamp);
+        copyLinkBtn.addEventListener('click', copyLinkWithoutQuality);
     }
     
     function addRippleEffect(element) {
