@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lap.ST - Просмотр</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container player-container">
+        <header class="player-header">
+            <a href="index.html" class="back-btn">← Назад</a>
+            <h1>Lap.<span class="highlight">ST</span></h1>
+        </header>
+
+        <main>
+            <div class="video-wrapper">
+                <video id="videoPlayer" controls controlsList="nodownload">
+                    <source id="videoSource" src="" type="video/mp4">
+                    Ваш браузер не поддерживает видео
+                </video>
+            </div>
+            
+            <div class="episode-info" id="episodeInfo">
+                <h3 id="episodeTitle"></h3>
+                <div class="button-group">
+                    <button id="downloadBtn" class="download-btn">
+                        📥 Скачать
+                    </button>
+                    <button id="copyLinkBtn" class="copy-btn">
+                        🔗 Копировать ссылку
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/all.js"></script>
+    <script src="js/player.js"></script>
+</body>
+</html>
