@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         localStorage.setItem(progressKey, JSON.stringify(progressData));
         
-        // Сохраняем последний просмотренный сериал
         localStorage.setItem('lastWatched', JSON.stringify({
             season: season,
             episode: episode,
@@ -47,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             quality: quality || currentQuality || episodesData.defaultQuality
         }));
         
-        // Сохраняем выбранное качество для этого сериала
         localStorage.setItem(`quality_${season}_${episode}`, quality || currentQuality);
     }
     
@@ -70,6 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
     
+    // Функция обновления заголовка с текущим качеством
+    function updateTitleWithQuality(season, episode, title, quality) {
+        episodeTitle.textContent = `${season} сезон, ${episode} серия - ${title || ''} (${quality})`;
+    }
+    
     // Функция загрузки доступных качеств
     function loadQualities(season, episode) {
         availableQualities = episodesData.getAvailableQualities(season, episode);
@@ -78,8 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             qualitySelector.style.display = 'block';
             qualitySelect.innerHTML = '';
             
-            // Сортируем качества по разрешению (от большего к меньшему)
-            const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p"];
+            const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p", "240p"];
             const sortedQualities = Object.keys(availableQualities).sort((a, b) => {
                 return qualityOrder.indexOf(a) - qualityOrder.indexOf(b);
             });
@@ -92,22 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 qualitySelect.appendChild(option);
             });
             
-            // Устанавливаем текущее качество
             let selectedQuality = null;
             
-            // Проверяем качество из URL
             const urlParams = getUrlParams();
             if (urlParams.quality && availableQualities[urlParams.quality]) {
                 selectedQuality = urlParams.quality;
             }
-            // Проверяем сохраненное качество
             else if (getSavedQuality(season, episode)) {
                 const savedQuality = getSavedQuality(season, episode);
                 if (availableQualities[savedQuality]) {
                     selectedQuality = savedQuality;
                 }
             }
-            // Если нет сохраненного, берем качество по умолчанию
             else {
                 selectedQuality = episodesData.getDefaultQuality(season, episode);
             }
@@ -116,9 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 qualitySelect.value = selectedQuality;
                 currentQuality = selectedQuality;
                 updateQualitySize(selectedQuality);
+                // Обновляем заголовок сразу
+                if (currentEpisodeData) {
+                    updateTitleWithQuality(season, episode, currentEpisodeData.title, selectedQuality);
+                }
             }
             
-            // Обработчик изменения качества
             qualitySelect.addEventListener('change', (e) => {
                 const newQuality = e.target.value;
                 if (newQuality && availableQualities[newQuality]) {
@@ -149,17 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
         currentQuality = newQuality;
         updateQualitySize(newQuality);
         
-        // Сохраняем выбранное качество
+        // Обновляем заголовок сразу при смене качества
+        updateTitleWithQuality(currentEpisodeData.season, currentEpisodeData.episode, currentEpisodeData.title, newQuality);
+        
         localStorage.setItem(`quality_${currentEpisodeData.season}_${currentEpisodeData.episode}`, newQuality);
         
-        // Загружаем видео с новым качеством
         const videoPath = episodesData.getVideoPath(currentEpisodeData.season, currentEpisodeData.episode, newQuality);
         
         if (videoPath) {
             videoSource.src = videoPath;
             videoPlayer.load();
             
-            // Когда видео загрузится, возвращаем на сохраненное время
             videoPlayer.addEventListener('loadedmetadata', () => {
                 videoPlayer.currentTime = currentTime;
                 if (wasPlaying) {
@@ -196,6 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="resume-yes">✅ Досмотреть с ${timeString}</button>
                     <button class="resume-no">▶️ Смотреть с начала</button>
                 </div>
+                <button class="close-modal">✖</button>
             </div>
         `;
         
@@ -217,6 +219,13 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => notification.remove(), 300);
             videoPlayer.play();
             saveProgress(savedProgress.season, savedProgress.episode, 0, savedProgress.quality);
+        });
+        
+        // Кнопка закрытия модального окна
+        notification.querySelector('.close-modal').addEventListener('click', () => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+            videoPlayer.play();
         });
     }
     
@@ -251,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="copy-with-time">✅ С таймкодом и качеством</button>
                     <button class="copy-without-time">📄 Без таймкода</button>
                 </div>
+                <button class="close-modal">✖</button>
             </div>
         `;
         
@@ -290,6 +300,12 @@ document.addEventListener('DOMContentLoaded', () => {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         });
+        
+        // Кнопка закрытия модального окна
+        notification.querySelector('.close-modal').addEventListener('click', () => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        });
     }
     
     // Функция показа уведомления
@@ -313,13 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Функция загрузки видео
     function loadVideo(season, episode, title, startTime = null, quality = null) {
-        // Загружаем доступные качества
         loadQualities(season, episode);
         
-        // Определяем качество
         let selectedQuality = quality;
         if (!selectedQuality) {
-            // Проверяем сохраненное качество
             const savedQuality = getSavedQuality(season, episode);
             if (savedQuality && availableQualities && availableQualities[savedQuality]) {
                 selectedQuality = savedQuality;
@@ -334,6 +347,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateQualitySize(selectedQuality);
         }
         
+        // Обновляем заголовок сразу
+        updateTitleWithQuality(season, episode, title, selectedQuality);
+        
         const videoPath = episodesData.getVideoPath(season, episode, selectedQuality);
         
         if (!videoPath) {
@@ -344,26 +360,19 @@ document.addEventListener('DOMContentLoaded', () => {
         videoSource.src = videoPath;
         videoPlayer.load();
         
-        // Обновляем заголовок
-        episodeTitle.textContent = `${season} сезон, ${episode} серия - ${title || ''} (${selectedQuality})`;
-        
-        // Сохраняем текущие данные
         currentEpisodeData = { season, episode, title };
         
-        // Обработка ошибок
         videoPlayer.addEventListener('error', () => {
-            episodeTitle.innerHTML += '<br><span style="color: #ff6b6b;">⚠️ Видео не найдено. Убедитесь, что файл загружен</span>';
+            episodeTitle.innerHTML += '<br><span style="color: #ff6b6b;">⚠️ Видео не найдено</span>';
             downloadBtn.disabled = true;
             copyLinkBtn.disabled = true;
         });
         
-        // Когда видео готово
         videoPlayer.addEventListener('loadedmetadata', () => {
             if (startTime !== null && startTime > 0) {
                 videoPlayer.currentTime = startTime;
                 videoPlayer.play();
             } else {
-                // Проверяем сохраненный прогресс
                 const savedProgress = getSavedProgress(season, episode);
                 if (savedProgress && savedProgress.time > 5) {
                     showResumeNotification(savedProgress);
@@ -373,7 +382,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Сохраняем прогресс каждые 5 секунд
         videoPlayer.addEventListener('timeupdate', () => {
             if (saveTimeout) clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => {
@@ -383,14 +391,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 5000);
         });
         
-        // Сохраняем прогресс при закрытии/перезагрузке
         window.addEventListener('beforeunload', () => {
             if (videoPlayer.currentTime > 0 && videoPlayer.currentTime < videoPlayer.duration - 5) {
                 saveProgress(season, episode, videoPlayer.currentTime, currentQuality);
             }
         });
         
-        // Сохраняем прогресс при паузе
         videoPlayer.addEventListener('pause', () => {
             if (videoPlayer.currentTime > 0 && videoPlayer.currentTime < videoPlayer.duration - 5) {
                 saveProgress(season, episode, videoPlayer.currentTime, currentQuality);
@@ -398,28 +404,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Функция возврата к сезонам
     function goBackToSeasons() {
         localStorage.removeItem('currentEpisode');
         window.location.href = 'index.html';
     }
     
-    // Функция скачивания с выбором качества
+    // Функция скачивания с выбором качества и кнопкой закрытия
     function downloadWithQuality() {
         if (!currentEpisodeData) return;
         
         const qualities = episodesData.getAvailableQualities(currentEpisodeData.season, currentEpisodeData.episode);
         
         if (qualities && Object.keys(qualities).length > 1) {
-            // Если несколько качеств, спрашиваем
             const notification = document.createElement('div');
-            notification.className = 'copy-notification';
+            notification.className = 'download-notification';
             notification.innerHTML = `
-                <div class="copy-content">
+                <div class="download-content">
                     <p>📥 Выберите качество для скачивания</p>
-                    <div class="copy-buttons">
+                    <div class="download-buttons">
                         ${Object.keys(qualities).sort((a, b) => {
-                            const order = ["2160p", "1080p", "720p", "480p", "360p"];
+                            const order = ["2160p", "1080p", "720p", "480p", "360p", "240p"];
                             return order.indexOf(a) - order.indexOf(b);
                         }).map(q => `
                             <button class="download-quality-btn" data-quality="${q}">
@@ -427,6 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </button>
                         `).join('')}
                     </div>
+                    <button class="close-modal-download">✖ Закрыть</button>
                 </div>
             `;
             
@@ -451,8 +456,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => notification.remove(), 300);
                 });
             });
+            
+            notification.querySelector('.close-modal-download').addEventListener('click', () => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            });
         } else {
-            // Если одно качество, скачиваем сразу
             const videoPath = episodesData.getVideoPath(currentEpisodeData.season, currentEpisodeData.episode, currentQuality);
             if (videoPath) {
                 const link = document.createElement('a');
@@ -464,7 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Основная логика
     const urlParams = getUrlParams();
     
     if (urlParams.season && urlParams.episode) {
@@ -494,7 +502,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Обработчики кнопок
     if (backBtn) {
         backBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -510,7 +517,6 @@ document.addEventListener('DOMContentLoaded', () => {
         copyLinkBtn.addEventListener('click', copyLinkWithTimestamp);
     }
     
-    // Добавляем эффект ripple для кнопок
     function addRippleEffect(element) {
         element.addEventListener('click', function(e) {
             const ripple = document.createElement('span');
