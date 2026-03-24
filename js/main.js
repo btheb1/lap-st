@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
         seriesInfo.textContent = `Сериал "${episodesData.title}"`;
     }
     
-    // Функция для получения диапазона качеств (минимальное-максимальное)
+    // Функция для получения диапазона качеств (от меньшего к большему)
     function getQualityRange(qualities) {
         if (!qualities || Object.keys(qualities).length === 0) return null;
         
-        const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p", "240p"];
+        const qualityOrder = ["240p", "360p", "480p", "720p", "1080p", "2160p"];
         
         let minQuality = null;
         let maxQuality = null;
@@ -39,13 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (minQuality && maxQuality) {
             if (minQuality === maxQuality) {
-                // Берем только число из качества (убераем p)
                 const num = minQuality.replace('p', '');
                 return num;
             }
             const minNum = minQuality.replace('p', '');
             const maxNum = maxQuality.replace('p', '');
-            return `${minNum}-${maxNum}`;
+            return `${minNum}-${maxNum}`; // 240-1080, а не 1080-240
         }
         
         return null;
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             season.episodes.forEach(ep => {
                 const progressKey = `progress_${season.season}_${ep.number}`;
                 const saved = localStorage.getItem(progressKey);
-                if (saved && JSON.parse(saved).time > 10) {
+                if (saved && JSON.parse(saved).time) {
                     hasAnyProgress = true;
                 }
             });
@@ -103,21 +102,22 @@ document.addEventListener('DOMContentLoaded', () => {
         season.episodes.forEach(ep => {
             const progressKey = `progress_${season.season}_${ep.number}`;
             const savedProgress = localStorage.getItem(progressKey);
-            const hasProgress = savedProgress && JSON.parse(savedProgress).time > 10;
+            const hasProgress = savedProgress && JSON.parse(savedProgress).time;
             let progressTime = '';
             let savedQuality = '';
             
             if (hasProgress) {
                 const saved = JSON.parse(savedProgress);
-                const minutes = Math.floor(saved.time / 60);
-                const seconds = Math.floor(saved.time % 60);
-                progressTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                if (saved.time) {
+                    const minutes = Math.floor(saved.time / 60);
+                    const seconds = Math.floor(saved.time % 60);
+                    progressTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
                 if (saved.quality) {
                     savedQuality = ` • ${saved.quality}`;
                 }
             }
             
-            // Получаем диапазон качеств для серии
             const qualities = episodesData.getAvailableQualities(season.season, ep.number);
             const qualityRange = getQualityRange(qualities);
             
