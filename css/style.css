@@ -1,3 +1,297 @@
+/* ===== ОСНОВНЫЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ===== HEADER ===== */
+header {
+    text-align: center;
+    padding: 40px 20px;
+    border-bottom: 2px solid #2a2a2a;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #fff, #6c5ce7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.highlight {
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+/* ===== ИНФОРМАЦИЯ О СЕРИАЛЕ ===== */
+.series-info {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.series-info h2 {
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.series-description {
+    color: #888;
+    font-size: 0.95rem;
+    margin-top: 10px;
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ===== КАРТОЧКИ СЕЗОНОВ ===== */
+.season-card {
+    background: #141414;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 30px;
+    border: 1px solid #2a2a2a;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.season-card:hover {
+    border-color: #6c5ce7;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(108, 92, 231, 0.1);
+}
+
+.season-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.season-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #6c5ce7;
+    margin: 0;
+}
+
+.season-year {
+    color: #888;
+    font-size: 0.9rem;
+    background: #1e1e1e;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.episodes-count {
+    color: #6c5ce7;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #2a2a2a;
+    display: inline-block;
+}
+
+/* ===== СЕТКА СЕРИЙ ===== */
+.episodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.episode-btn {
+    background: #1e1e1e;
+    border: 1px solid #2e2e2e;
+    color: #e0e0e0;
+    padding: 14px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.episode-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(108, 92, 231, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.episode-btn:hover::before {
+    left: 100%;
+}
+
+.episode-btn:hover {
+    background: #6c5ce7;
+    border-color: #6c5ce7;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+}
+
+.episode-number {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 6px;
+}
+
+.episode-title {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
+}
+
+.episode-duration {
+    font-size: 0.7rem;
+    color: #6c5ce7;
+    font-family: monospace;
+}
+
+.episode-btn:hover .episode-title {
+    color: white;
+}
+
+.episode-btn:hover .episode-duration {
+    color: #fff;
+}
+
+/* Индикатор прогресса на кнопках */
+.episode-btn.has-progress {
+    border-color: #6c5ce7;
+    background: #1e1a2f;
+    box-shadow: 0 0 8px rgba(108, 92, 231, 0.3);
+}
+
+.progress-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 10px;
+    color: #6c5ce7;
+    animation: pulse 2s infinite;
+}
+
+/* ===== СТРАНИЦА ПЛЕЕРА ===== */
+.player-container {
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.player-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #2a2a2a;
+    flex-wrap: wrap;
+}
+
+.back-btn {
+    color: #6c5ce7;
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e1e1e;
+}
+
+.back-btn:hover {
+    background: #6c5ce7;
+    color: white;
+    transform: translateX(-3px);
+}
+
+.player-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+/* Видео плеер */
+.video-wrapper {
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+video {
+    width: 100%;
+    max-height: 70vh;
+    background: #000;
+    outline: none;
+    display: block;
+}
+
+/* Стили для видео контролов */
+video::-webkit-media-controls-panel {
+    background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+}
+
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display {
+    color: #6c5ce7;
+}
+
+/* Информация о серии */
+.episode-info {
+    text-align: center;
+    padding: 24px;
+    background: #141414;
+    border-radius: 16px;
+    margin-top: 20px;
+}
+
+.episode-info h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
 /* Группа кнопок */
 .button-group {
     display: flex;
@@ -8,16 +302,18 @@
 }
 
 .download-btn, .copy-btn {
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 12px 28px;
+    border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     border: none;
+    position: relative;
+    overflow: hidden;
 }
 
 .download-btn {
@@ -32,7 +328,41 @@
 
 .download-btn:hover, .copy-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.download-btn:active, .copy-btn:active {
+    transform: translateY(0);
+}
+
+.download-btn:disabled, .copy-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ===== УВЕДОМЛЕНИЯ ===== */
+/* Основное уведомление */
+.notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 /* Уведомление о продолжении просмотра */
@@ -43,13 +373,14 @@
     transform: translate(-50%, -50%) scale(0.9);
     background: #1e1e1e;
     border: 2px solid #6c5ce7;
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 0;
     z-index: 2000;
     opacity: 0;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    min-width: 300px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    min-width: 320px;
+    backdrop-filter: blur(10px);
 }
 
 .resume-notification.show {
@@ -58,32 +389,40 @@
 }
 
 .resume-content {
-    padding: 24px;
+    padding: 28px;
 }
 
 .resume-content p {
-    margin: 10px 0;
+    margin: 12px 0;
     font-size: 1rem;
+    line-height: 1.5;
+}
+
+.resume-content p:first-child {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #6c5ce7;
 }
 
 .resume-buttons {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 24px;
 }
 
 .resume-yes, .resume-no {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
+    font-size: 0.95rem;
 }
 
 .resume-yes {
-    background: #6c5ce7;
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
     color: white;
 }
 
@@ -96,6 +435,10 @@
     transform: translateY(-2px);
 }
 
+.resume-yes:active, .resume-no:active {
+    transform: translateY(0);
+}
+
 /* Уведомление о копировании ссылки */
 .copy-notification {
     position: fixed;
@@ -104,13 +447,13 @@
     transform: translate(-50%, -50%) scale(0.9);
     background: #1e1e1e;
     border: 2px solid #00cec9;
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 0;
     z-index: 2000;
     opacity: 0;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    min-width: 320px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    min-width: 340px;
 }
 
 .copy-notification.show {
@@ -119,32 +462,39 @@
 }
 
 .copy-content {
-    padding: 24px;
+    padding: 28px;
 }
 
 .copy-content p {
-    margin: 10px 0;
+    margin: 12px 0;
     font-size: 1rem;
+}
+
+.copy-content p:first-child {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #00cec9;
 }
 
 .copy-buttons {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 24px;
     flex-direction: column;
 }
 
 .copy-with-time, .copy-without-time {
-    padding: 10px;
+    padding: 12px;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
+    font-size: 0.95rem;
 }
 
 .copy-with-time {
-    background: #00cec9;
+    background: linear-gradient(135deg, #00b894, #00cec9);
     color: #1e1e1e;
 }
 
@@ -157,26 +507,117 @@
     transform: translateY(-2px);
 }
 
-/* Индикатор прогресса на кнопках серий */
-.episode-btn {
-    position: relative;
+/* ===== АНИМАЦИИ ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
-.episode-btn.has-progress {
-    border-color: #6c5ce7;
-    background: #1e1a2f;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.progress-icon {
-    position: absolute;
-    top: 5px;
-    right: 8px;
-    font-size: 10px;
-    color: #6c5ce7;
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Адаптация для мобильных */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ===== СКРОЛЛБАР ===== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a4bd7, #954dd7);
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+/* Планшеты */
 @media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    header {
+        padding: 25px 15px;
+        margin-bottom: 30px;
+    }
+    
+    h1 {
+        font-size: 2.2rem;
+    }
+    
+    .series-info h2 {
+        font-size: 1.4rem;
+    }
+    
+    .episodes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 12px;
+    }
+    
+    .episode-btn {
+        padding: 12px 10px;
+    }
+    
+    .episode-number {
+        font-size: 0.9rem;
+    }
+    
+    .episode-title {
+        font-size: 0.75rem;
+    }
+    
+    .player-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .player-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .back-btn {
+        align-self: flex-start;
+    }
+    
     .button-group {
         flex-direction: column;
     }
@@ -193,5 +634,201 @@
     
     .resume-buttons, .copy-buttons {
         flex-direction: column;
+    }
+    
+    .season-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .season-title {
+        font-size: 1.3rem;
+    }
+    
+    .notification {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        text-align: center;
+        transform: translateY(100%);
+    }
+    
+    .notification.show {
+        transform: translateY(0);
+    }
+}
+
+/* Мобильные телефоны */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header {
+        padding: 20px 10px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .series-info h2 {
+        font-size: 1.2rem;
+    }
+    
+    .series-description {
+        font-size: 0.85rem;
+    }
+    
+    .episodes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 10px;
+    }
+    
+    .episode-btn {
+        padding: 10px 8px;
+    }
+    
+    .episode-number {
+        font-size: 0.85rem;
+    }
+    
+    .episode-title {
+        font-size: 0.7rem;
+    }
+    
+    .episode-duration {
+        font-size: 0.65rem;
+    }
+    
+    .season-card {
+        padding: 16px;
+    }
+    
+    .season-title {
+        font-size: 1.2rem;
+    }
+    
+    .episode-info h3 {
+        font-size: 1rem;
+    }
+    
+    .resume-content, .copy-content {
+        padding: 20px;
+    }
+    
+    .resume-content p, .copy-content p {
+        font-size: 0.9rem;
+    }
+    
+    .resume-yes, .resume-no,
+    .copy-with-time, .copy-without-time {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+    
+    .progress-icon {
+        top: 5px;
+        right: 5px;
+        font-size: 8px;
+    }
+}
+
+/* Десктопы с большим экраном */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    .episodes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+    }
+    
+    .episode-btn {
+        padding: 16px;
+    }
+    
+    video {
+        max-height: 75vh;
+    }
+}
+
+/* ===== ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ ===== */
+/* Эффект свечения для активных элементов */
+.episode-btn:focus, 
+.download-btn:focus, 
+.copy-btn:focus,
+.back-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.4);
+}
+
+/* Анимация загрузки */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.loading {
+    background: linear-gradient(90deg, #1e1e1e 25%, #2a2a2a 50%, #1e1e1e 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Стили для активного видео */
+video:focus {
+    outline: none;
+}
+
+/* Кастомные контролы для мобильных */
+@media (max-width: 768px) {
+    video {
+        max-height: 50vh;
+    }
+}
+
+/* Темная тема для select и input */
+select, input {
+    background: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #2e2e2e;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: #6c5ce7;
+}
+
+/* Эффект ripple для кнопок */
+.download-btn, .copy-btn, .episode-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
     }
 }
