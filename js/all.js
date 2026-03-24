@@ -18,8 +18,8 @@ const episodesData = {
                         "1080p": { file: "ser01_1080p.mp4", size: "850 MB", path: "film/seas1/ser01_1080p.mp4" },
                         "720p": { file: "ser01_720p.mp4", size: "450 MB", path: "film/seas1/ser01_720p.mp4" },
                         "480p": { file: "ser01_480p.mp4", size: "250 MB", path: "film/seas1/ser01_480p.mp4" },
-                        "360p": { file: "seas01_ser01_360p.mp4", size: "101 MB", path: "film/seas1/seas01_ser01_360p.mp4" },
-                        "240p": { file: "seas01_ser01_240p.mp4", size: "59.3 MB", path: "film/seas1/seas01_ser01_240p.mp4" },
+                        "360p": { file: "seas01_ser01_360p.mp4", size: "101 MB", path: "film/seas01/ser01/seas01_ser01_360p.mp4" },
+                        "240p": { file: "seas01_ser01_240p.mp4", size: "59.3 MB", path: "film/seas01/ser01/seas01_ser01_240p.mp4" }
                     }
                 },
                 { 
