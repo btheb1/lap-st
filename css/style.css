@@ -953,3 +953,97 @@ select:focus, input:focus {
     animation: ripple 0.6s linear;
     pointer-events: none;
 }
+
+/* ===== ВЫБОР КАЧЕСТВА ===== */
+.quality-selector {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.quality-label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.quality-label span:first-child {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.quality-select {
+    background: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #6c5ce7;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quality-select:hover {
+    background: #2a2a2a;
+}
+
+.quality-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.3);
+}
+
+.quality-size {
+    color: #6c5ce7;
+    font-size: 0.85rem;
+    font-family: monospace;
+}
+
+/* Кнопки выбора качества для скачивания */
+.download-quality-btn {
+    background: linear-gradient(135deg, #2c2c2c, #1e1e1e);
+    color: #e0e0e0;
+    border: 1px solid #6c5ce7;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin: 5px 0;
+}
+
+.download-quality-btn:hover {
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    transform: translateX(5px);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .quality-selector {
+        padding: 10px 15px;
+    }
+    
+    .quality-label {
+        gap: 10px;
+        flex-direction: column;
+    }
+    
+    .quality-select {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .quality-size {
+        font-size: 0.75rem;
+    }
+    
+    .download-quality-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
