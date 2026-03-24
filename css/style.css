@@ -1421,3 +1421,50 @@ input:checked + .slider:before {
         padding: 12px;
     }
 }
+
+/* ===== КНОПКИ В УВЕДОМЛЕНИИ (ПРОСМОТР) ===== */
+.resume-catalog-btn {
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.resume-catalog-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
+}
+
+.resume-play-btn {
+    background: #2c2c2c;
+    color: #e0e0e0;
+    border: 1px solid #4a4a4a;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.resume-play-btn:hover {
+    background: #3a3a3a;
+    transform: translateY(-2px);
+    border-color: #6c5ce7;
+}
+
+/* Контейнер для кнопок в уведомлении */
+.resume-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
