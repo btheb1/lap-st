@@ -1063,3 +1063,103 @@ select:focus, input:focus {
     color: white;
     background: rgba(0, 206, 201, 0.3);
 }
+
+/* Кнопка закрытия модального окна */
+.close-modal, .close-modal-download {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover, .close-modal-download:hover {
+    color: #ff6b6b;
+    transform: scale(1.1);
+}
+
+/* Модальное окно для скачивания */
+.download-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 0;
+    z-index: 2000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    min-width: 300px;
+}
+
+.download-notification.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.download-content {
+    padding: 28px;
+    position: relative;
+}
+
+.download-content p {
+    margin: 0 0 20px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #6c5ce7;
+    text-align: center;
+}
+
+.download-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.download-quality-btn {
+    background: #2c2c2c;
+    color: #e0e0e0;
+    border: 1px solid #3a3a3a;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.download-quality-btn:hover {
+    background: #6c5ce7;
+    border-color: #6c5ce7;
+    transform: translateX(5px);
+}
+
+/* Убираем зеленую обводку */
+.quality-select:focus,
+.episode-card:focus,
+.download-btn:focus,
+.copy-btn:focus,
+.back-btn:focus,
+.back-to-seasons:focus,
+.season-card-select:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Оставляем только нормальный фокус */
+.quality-select:focus-visible,
+.episode-card:focus-visible,
+.download-btn:focus-visible,
+.copy-btn:focus-visible,
+.back-btn:focus-visible {
+    outline: 2px solid #6c5ce7;
+    outline-offset: 2px;
+}
