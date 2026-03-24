@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentSeasonTitle = document.getElementById('currentSeasonTitle');
     const backToSeasonsBtn = document.getElementById('backToSeasonsBtn');
     
-    // Получаем все сезоны из all.js
     const allSeasons = episodesData.getAllSeasons();
     
     // Отображаем информацию о сериале
@@ -14,12 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
         seriesInfo.textContent = `Сериал "${episodesData.title}"`;
     }
     
-    // Функция отображения сезонов
     function displaySeasons() {
         seasonsList.innerHTML = '';
         
         allSeasons.forEach((season) => {
-            // Проверяем, есть ли сохраненный прогресс в этом сезоне
             let hasAnyProgress = false;
             season.episodes.forEach(ep => {
                 const progressKey = `progress_${season.season}_${ep.number}`;
@@ -53,34 +50,49 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Функция отображения серий выбранного сезона
     function showEpisodes(seasonNumber) {
         const season = allSeasons.find(s => s.season === seasonNumber);
         
         if (!season) return;
         
-        // Обновляем заголовок
+        // Получаем лучшее доступное качество для отображения
+        let bestQualityInfo = '';
+        const firstEpisode = season.episodes[0];
+        if (firstEpisode && firstEpisode.qualities) {
+            const bestQuality = episodesData.getBestQuality(seasonNumber, 1);
+            if (bestQuality) {
+                bestQualityInfo = ` • Макс. качество: ${bestQuality}`;
+            }
+        }
+        
         currentSeasonTitle.innerHTML = `
             <h3>${season.season} Сезон</h3>
-            <p>${season.year} год • ${season.episodes.length} серий</p>
+            <p>${season.year} год • ${season.episodes.length} серий${bestQualityInfo}</p>
         `;
         
-        // Очищаем и заполняем сетку серий
         episodesGrid.innerHTML = '';
         
         season.episodes.forEach(ep => {
-            // Проверяем сохраненный прогресс
             const progressKey = `progress_${season.season}_${ep.number}`;
             const savedProgress = localStorage.getItem(progressKey);
             const hasProgress = savedProgress && JSON.parse(savedProgress).time > 10;
             let progressTime = '';
+            let savedQuality = '';
             
             if (hasProgress) {
                 const saved = JSON.parse(savedProgress);
                 const minutes = Math.floor(saved.time / 60);
                 const seconds = Math.floor(saved.time % 60);
                 progressTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                if (saved.quality) {
+                    savedQuality = ` • ${saved.quality}`;
+                }
             }
+            
+            // Получаем доступные качества для серии
+            const qualities = episodesData.getAvailableQualities(season.season, ep.number);
+            const qualitiesCount = qualities ? Object.keys(qualities).length : 0;
+            const bestQuality = qualities ? episodesData.getBestQuality(season.season, ep.number) : '';
             
             const episodeCard = document.createElement('button');
             episodeCard.className = `episode-card ${hasProgress ? 'has-progress' : ''}`;
@@ -93,15 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="episode-number">${ep.number} серия</div>
                 <div class="episode-title">${ep.title}</div>
                 <div class="episode-duration">${ep.duration}</div>
-                ${hasProgress ? `<div class="episode-progress">⏺ ${progressTime}</div>` : ''}
+                ${qualitiesCount > 1 ? `<div class="episode-qualities">🎬 ${qualitiesCount} качества (до ${bestQuality})</div>` : ''}
+                ${hasProgress ? `<div class="episode-progress">⏺ ${progressTime}${savedQuality}</div>` : ''}
             `;
             
             episodeCard.addEventListener('click', () => {
-                // Сохраняем данные и переходим к просмотру
                 localStorage.setItem('currentEpisode', JSON.stringify({
                     season: season.season,
                     episode: ep.number,
-                    file: ep.file,
                     title: ep.title
                 }));
                 
@@ -111,21 +122,16 @@ document.addEventListener('DOMContentLoaded', () => {
             episodesGrid.appendChild(episodeCard);
         });
         
-        // Показываем секцию с сериями, скрываем список сезонов
         seasonsList.style.display = 'none';
         episodesSection.style.display = 'block';
-        
-        // Плавная прокрутка вверх
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    // Кнопка "Назад к сезонам"
     backToSeasonsBtn.addEventListener('click', () => {
         seasonsList.style.display = 'grid';
         episodesSection.style.display = 'none';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     
-    // Отображаем сезоны
     displaySeasons();
 });
