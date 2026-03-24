@@ -13,6 +13,56 @@ document.addEventListener('DOMContentLoaded', () => {
         seriesInfo.textContent = `Сериал "${episodesData.title}"`;
     }
     
+    // Функция для получения диапазона качеств
+    function getQualityRange(qualities) {
+        if (!qualities || Object.keys(qualities).length === 0) return null;
+        
+        const qualityOrder = {
+            "2160p": 2160,
+            "1440p": 1440,
+            "1080p": 1080,
+            "720p": 720,
+            "480p": 480,
+            "360p": 360,
+            "240p": 240
+        };
+        
+        const availableQualities = Object.keys(qualities);
+        
+        // Находим минимальное и максимальное качество
+        let minQuality = null;
+        let maxQuality = null;
+        let minValue = Infinity;
+        let maxValue = -Infinity;
+        
+        availableQualities.forEach(q => {
+            const value = qualityOrder[q];
+            if (value) {
+                if (value < minValue) {
+                    minValue = value;
+                    minQuality = q;
+                }
+                if (value > maxValue) {
+                    maxValue = value;
+                    maxQuality = q;
+                }
+            }
+        });
+        
+        if (minQuality && maxQuality) {
+            // Если минимальное и максимальное одинаковые, показываем одно качество
+            if (minQuality === maxQuality) {
+                return minQuality;
+            }
+            // Иначе показываем диапазон
+            const minNum = minQuality.replace('p', '');
+            const maxNum = maxQuality.replace('p', '');
+            return `${minNum}-${maxNum}`;
+        }
+        
+        return null;
+    }
+    
     function displaySeasons() {
         seasonsList.innerHTML = '';
         
@@ -55,24 +105,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!season) return;
         
-        // Получаем лучшее доступное качество для отображения
-        let bestQualityInfo = '';
-        const firstEpisode = season.episodes[0];
-        if (firstEpisode && firstEpisode.qualities) {
-            const bestQuality = episodesData.getBestQuality(seasonNumber, 1);
-            if (bestQuality) {
-                bestQualityInfo = ` • Макс. качество: ${bestQuality}`;
-            }
-        }
-        
         currentSeasonTitle.innerHTML = `
             <h3>${season.season} Сезон</h3>
-            <p>${season.year} год • ${season.episodes.length} серий${bestQualityInfo}</p>
+            <p>${season.year} год • ${season.episodes.length} серий</p>
         `;
         
         episodesGrid.innerHTML = '';
         
         season.episodes.forEach(ep => {
+            // Проверяем прогресс
             const progressKey = `progress_${season.season}_${ep.number}`;
             const savedProgress = localStorage.getItem(progressKey);
             const hasProgress = savedProgress && JSON.parse(savedProgress).time > 10;
@@ -89,23 +130,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // Получаем доступные качества для серии
+            // Получаем диапазон качеств для серии
             const qualities = episodesData.getAvailableQualities(season.season, ep.number);
-            const qualitiesCount = qualities ? Object.keys(qualities).length : 0;
-            const bestQuality = qualities ? episodesData.getBestQuality(season.season, ep.number) : '';
+            const qualityRange = getQualityRange(qualities);
             
             const episodeCard = document.createElement('button');
             episodeCard.className = `episode-card ${hasProgress ? 'has-progress' : ''}`;
             episodeCard.setAttribute('data-season', season.season);
             episodeCard.setAttribute('data-episode', ep.number);
-            episodeCard.setAttribute('data-file', ep.file);
             episodeCard.setAttribute('data-title', ep.title);
             
             episodeCard.innerHTML = `
                 <div class="episode-number">${ep.number} серия</div>
                 <div class="episode-title">${ep.title}</div>
                 <div class="episode-duration">${ep.duration}</div>
-                ${qualitiesCount > 1 ? `<div class="episode-qualities">🎬 ${qualitiesCount} качества (до ${bestQuality})</div>` : ''}
+                ${qualityRange ? `<div class="episode-qualities">🎬 ${qualityRange}</div>` : ''}
                 ${hasProgress ? `<div class="episode-progress">⏺ ${progressTime}${savedQuality}</div>` : ''}
             `;
             
