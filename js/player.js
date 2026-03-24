@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const currentEpisodeIndex = seasonData.episodes.findIndex(e => e.number === episode);
         
-        // Предыдущая серия в том же сезоне
         if (currentEpisodeIndex > 0) {
             const prevEpisode = seasonData.episodes[currentEpisodeIndex - 1];
             return {
@@ -108,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
         
-        // Если это первая серия, ищем предыдущий сезон
         const allSeasons = episodesData.series;
         const currentSeasonIndex = allSeasons.findIndex(s => s.season === season);
         
@@ -135,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const currentEpisodeIndex = seasonData.episodes.findIndex(e => e.number === episode);
         
-        // Следующая серия в том же сезоне
         if (currentEpisodeIndex < seasonData.episodes.length - 1) {
             const nextEpisode = seasonData.episodes[currentEpisodeIndex + 1];
             return {
@@ -146,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
         
-        // Если это последняя серия, ищем следующий сезон
         const allSeasons = episodesData.series;
         const currentSeasonIndex = allSeasons.findIndex(s => s.season === season);
         
@@ -168,10 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Функция загрузки серии
     function loadEpisode(season, episode, title) {
-        // Получаем доступные качества
         const qualities = episodesData.getAvailableQualities(season, episode);
         
-        // Определяем качество
         let selectedQuality = getSavedQuality(season, episode);
         if (!selectedQuality || !qualities || !qualities[selectedQuality]) {
             selectedQuality = episodesData.getDefaultQuality(season, episode);
@@ -180,9 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentQuality = selectedQuality;
         currentEpisodeData = { season, episode, title };
         
-        // Обновляем селектор качества
         if (qualitySelect && qualities) {
-            // Сохраняем текущее значение
             qualitySelect.value = selectedQuality;
             updateQualitySize(selectedQuality);
         }
@@ -199,14 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const embedUrl = getEmbedUrl(videoPath);
         driveIframe.src = embedUrl;
         
-        // Сохраняем прогресс
         saveProgress(season, episode, selectedQuality);
         
-        // Обновляем URL без перезагрузки
         const newUrl = `${window.location.pathname}?season=${season}&episode=${episode}`;
         window.history.pushState({}, '', newUrl);
         
-        // Обновляем состояние кнопок навигации
         updateNavigationButtons();
     }
     
@@ -230,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Функция загрузки предыдущей серии
     function loadPrevEpisode() {
         if (!currentEpisodeData) return;
         
@@ -243,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Функция загрузки следующей серии
     function loadNextEpisode() {
         if (!currentEpisodeData) return;
         
@@ -256,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Функция возврата в каталог
     function goToCatalog() {
         localStorage.removeItem('currentEpisode');
         window.location.href = 'index.html';
@@ -331,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // ========== ИСПРАВЛЕННОЕ УВЕДОМЛЕНИЕ С КРАСИВЫМИ КНОПКАМИ ==========
     function showResumeNotification(savedProgress) {
         const qualityInfo = savedProgress.quality ? ` (${savedProgress.quality})` : '';
         
@@ -340,8 +327,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="resume-content">
                 <p>📺 Вы смотрели ${savedProgress.season} сезон, ${savedProgress.episode} серия${qualityInfo}</p>
                 <div class="resume-buttons">
-                    <button class="resume-catalog">📁 В каталог</button>
-                    <button class="resume-no">▶️ Смотреть с начала</button>
+                    <button class="resume-catalog-btn">📁 В каталог</button>
+                    <button class="resume-play-btn">▶️ Смотреть с начала</button>
                 </div>
                 <button class="close-modal">✖</button>
             </div>
@@ -353,13 +340,13 @@ document.addEventListener('DOMContentLoaded', () => {
             notification.classList.add('show');
         }, 100);
         
-        notification.querySelector('.resume-catalog').addEventListener('click', () => {
+        notification.querySelector('.resume-catalog-btn').addEventListener('click', () => {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
             goToCatalog();
         });
         
-        notification.querySelector('.resume-no').addEventListener('click', () => {
+        notification.querySelector('.resume-play-btn').addEventListener('click', () => {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         });
@@ -369,8 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => notification.remove(), 300);
         });
     }
+    // ===================================================================
     
-    // Простое копирование ссылки
     async function copySimpleLink() {
         if (!currentEpisodeData) return;
         
@@ -408,7 +395,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
     
-    // Добавляем кнопки навигации
     function addNavigationButtons() {
         const episodeInfo = document.querySelector('.episode-info');
         
@@ -465,14 +451,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         saveProgress(season, episode, selectedQuality);
         
-        // Обновляем URL
         const newUrl = `${window.location.pathname}?season=${season}&episode=${episode}`;
         window.history.pushState({}, '', newUrl);
         
-        // Обновляем кнопки навигации
         updateNavigationButtons();
         
-        // Проверяем сохраненный прогресс
         const savedProgress = getSavedProgress(season, episode);
         if (savedProgress) {
             setTimeout(() => {
@@ -590,7 +573,6 @@ document.addEventListener('DOMContentLoaded', () => {
         copyLinkBtn.addEventListener('click', copySimpleLink);
     }
     
-    // Добавляем кнопки навигации
     setTimeout(() => {
         addNavigationButtons();
     }, 500);
