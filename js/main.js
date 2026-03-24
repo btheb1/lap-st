@@ -3,30 +3,49 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (!seasonsContainer) return;
     
+    // Получаем все сезоны из all.js
+    const allSeasons = episodesData.getAllSeasons();
+    
+    // Отображаем информацию о сериале
+    const seriesInfo = document.querySelector('.series-info h2');
+    if (seriesInfo) {
+        seriesInfo.textContent = `Сериал "${episodesData.title}"`;
+        const description = document.createElement('p');
+        description.className = 'series-description';
+        description.textContent = episodesData.description;
+        document.querySelector('.series-info').appendChild(description);
+    }
+    
     // Отображаем все сезоны
-    episodesData.series.forEach((season, seasonIndex) => {
+    allSeasons.forEach((season) => {
         const seasonCard = document.createElement('div');
         seasonCard.className = 'season-card';
         
-        // Проверяем, есть ли сохраненный прогресс для серий
+        // Проверяем наличие прогресса для серий
         const episodesWithProgress = season.episodes.map(ep => {
-            const progressKey = `progress_${seasonIndex + 1}_${ep.number}`;
+            const progressKey = `progress_${season.season}_${ep.number}`;
             const saved = localStorage.getItem(progressKey);
             const hasProgress = saved && JSON.parse(saved).time > 10;
             return { ...ep, hasProgress };
         });
         
         seasonCard.innerHTML = `
-            <h3 class="season-title">${seasonIndex + 1} Сезон</h3>
-            <div class="episodes-grid" id="season-${seasonIndex + 1}">
+            <div class="season-header">
+                <h3 class="season-title">${season.season} Сезон</h3>
+                <span class="season-year">${season.year}</span>
+            </div>
+            <div class="episodes-count">${season.episodes.length} серий</div>
+            <div class="episodes-grid">
                 ${episodesWithProgress.map(ep => `
                     <button class="episode-btn ${ep.hasProgress ? 'has-progress' : ''}" 
-                            data-season="${seasonIndex + 1}" 
+                            data-season="${season.season}" 
                             data-episode="${ep.number}" 
                             data-file="${ep.file}"
-                            data-title="${ep.title}">
-                        ${ep.number} серия<br>
-                        <small>${ep.title}</small>
+                            data-title="${ep.title}"
+                            data-duration="${ep.duration}">
+                        <div class="episode-number">${ep.number} серия</div>
+                        <div class="episode-title">${ep.title}</div>
+                        <div class="episode-duration">${ep.duration}</div>
                         ${ep.hasProgress ? '<span class="progress-icon">⏺</span>' : ''}
                     </button>
                 `).join('')}
@@ -39,15 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Добавляем обработчики на кнопки серий
     document.querySelectorAll('.episode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const season = btn.dataset.season;
-            const episode = btn.dataset.episode;
+            const season = parseInt(btn.dataset.season);
+            const episode = parseInt(btn.dataset.episode);
             const file = btn.dataset.file;
             const title = btn.dataset.title;
             
-            // Сохраняем данные
+            // Сохраняем данные в localStorage
             localStorage.setItem('currentEpisode', JSON.stringify({
-                season: parseInt(season),
-                episode: parseInt(episode),
+                season: season,
+                episode: episode,
                 file: file,
                 title: title
             }));
