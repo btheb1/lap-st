@@ -20,17 +20,21 @@
                 <div class="quality-label">
                     <span>🎬 Качество:</span>
                     <select id="qualitySelect" class="quality-select">
-                        <!-- Качества будут загружены динамически -->
                     </select>
                     <span class="quality-size" id="qualitySize"></span>
                 </div>
             </div>
 
+            <!-- Видео плеер - используем iframe для Google Drive -->
             <div class="video-wrapper">
-                <video id="videoPlayer" controls controlsList="nodownload">
-                    <source id="videoSource" src="" type="video/mp4">
-                    Ваш браузер не поддерживает видео
-                </video>
+                <iframe id="driveIframe" 
+                        src="" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                </iframe>
             </div>
             
             <div class="episode-info" id="episodeInfo">
