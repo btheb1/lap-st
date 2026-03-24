@@ -25,7 +25,43 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
-    // Функция сохранения прогресса (с качеством)
+    // Функция преобразования Google Drive ссылки в embed формат
+    function getEmbedUrl(driveUrl) {
+        // Если это уже embed ссылка
+        if (driveUrl.includes('drive.google.com/uc?export=download')) {
+            // Извлекаем ID
+            const match = driveUrl.match(/id=([^&]+)/);
+            if (match) {
+                const fileId = match[1];
+                // Используем другой формат для прямого воспроизведения
+                return `https://drive.google.com/file/d/${fileId}/preview`;
+            }
+        }
+        // Если это стандартная ссылка просмотра
+        if (driveUrl.includes('drive.google.com/file/d/')) {
+            const match = driveUrl.match(/\/d\/([^\/]+)/);
+            if (match) {
+                const fileId = match[1];
+                return `https://drive.google.com/file/d/${fileId}/preview`;
+            }
+        }
+        return driveUrl;
+    }
+    
+    // Функция получения прямой ссылки для скачивания
+    function getDownloadUrl(driveUrl) {
+        const match = driveUrl.match(/id=([^&]+)/);
+        if (match) {
+            return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+        }
+        const match2 = driveUrl.match(/\/d\/([^\/]+)/);
+        if (match2) {
+            return `https://drive.google.com/uc?export=download&id=${match2[1]}`;
+        }
+        return driveUrl;
+    }
+    
+    // Функция сохранения прогресса
     function saveProgress(season, episode, time, quality) {
         const progressKey = `progress_${season}_${episode}`;
         const progressData = {
@@ -49,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(`quality_${season}_${episode}`, quality || currentQuality);
     }
     
-    // Функция получения сохраненного прогресса
     function getSavedProgress(season, episode) {
         const progressKey = `progress_${season}_${episode}`;
         const saved = localStorage.getItem(progressKey);
@@ -59,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
     
-    // Функция получения сохраненного качества
     function getSavedQuality(season, episode) {
         const savedQuality = localStorage.getItem(`quality_${season}_${episode}`);
         if (savedQuality) {
@@ -68,12 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
     
-    // Функция обновления заголовка с текущим качеством
     function updateTitleWithQuality(season, episode, title, quality) {
         episodeTitle.textContent = `${season} сезон, ${episode} серия - ${title || ''} (${quality})`;
     }
     
-    // Функция загрузки доступных качеств
     function loadQualities(season, episode) {
         availableQualities = episodesData.getAvailableQualities(season, episode);
         
@@ -114,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 qualitySelect.value = selectedQuality;
                 currentQuality = selectedQuality;
                 updateQualitySize(selectedQuality);
-                // Обновляем заголовок сразу
                 if (currentEpisodeData) {
                     updateTitleWithQuality(season, episode, currentEpisodeData.title, selectedQuality);
                 }
@@ -131,7 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Функция обновления размера файла
     function updateQualitySize(quality) {
         if (availableQualities && availableQualities[quality] && availableQualities[quality].size) {
             qualitySize.textContent = `Вес: ${availableQualities[quality].size}`;
@@ -140,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Функция смены качества
     function changeQuality(newQuality) {
         if (!currentEpisodeData) return;
         
@@ -149,8 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         currentQuality = newQuality;
         updateQualitySize(newQuality);
-        
-        // Обновляем заголовок сразу при смене качества
         updateTitleWithQuality(currentEpisodeData.season, currentEpisodeData.episode, currentEpisodeData.title, newQuality);
         
         localStorage.setItem(`quality_${currentEpisodeData.season}_${currentEpisodeData.episode}`, newQuality);
@@ -158,7 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const videoPath = episodesData.getVideoPath(currentEpisodeData.season, currentEpisodeData.episode, newQuality);
         
         if (videoPath) {
-            videoSource.src = videoPath;
+            // Для Google Drive используем embed формат
+            const embedUrl = getEmbedUrl(videoPath);
+            videoSource.src = embedUrl;
             videoPlayer.load();
             
             videoPlayer.addEventListener('loadedmetadata', () => {
@@ -171,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Функция показа уведомления о продолжении просмотра
     function showResumeNotification(savedProgress) {
         const timeInSeconds = savedProgress.time;
         const hours = Math.floor(timeInSeconds / 3600);
@@ -221,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
             saveProgress(savedProgress.season, savedProgress.episode, 0, savedProgress.quality);
         });
         
-        // Кнопка закрытия модального окна
         notification.querySelector('.close-modal').addEventListener('click', () => {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
@@ -229,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Функция копирования ссылки с таймкодом и качеством
     async function copyLinkWithTimestamp() {
         const currentTime = Math.floor(videoPlayer.currentTime);
         const baseUrl = window.location.origin + window.location.pathname;
@@ -301,14 +327,12 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => notification.remove(), 300);
         });
         
-        // Кнопка закрытия модального окна
         notification.querySelector('.close-modal').addEventListener('click', () => {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         });
     }
     
-    // Функция показа уведомления
     function showNotification(message) {
         const notification = document.createElement('div');
         notification.className = 'notification';
@@ -327,7 +351,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     }
     
-    // Функция загрузки видео
     function loadVideo(season, episode, title, startTime = null, quality = null) {
         loadQualities(season, episode);
         
@@ -347,23 +370,24 @@ document.addEventListener('DOMContentLoaded', () => {
             updateQualitySize(selectedQuality);
         }
         
-        // Обновляем заголовок сразу
         updateTitleWithQuality(season, episode, title, selectedQuality);
         
-        const videoPath = episodesData.getVideoPath(season, episode, selectedQuality);
+        let videoPath = episodesData.getVideoPath(season, episode, selectedQuality);
         
         if (!videoPath) {
             episodeTitle.innerHTML = '<span style="color: #ff6b6b;">⚠️ Ошибка: видео не найдено</span>';
             return;
         }
         
-        videoSource.src = videoPath;
+        // Преобразуем Google Drive ссылку в embed формат для воспроизведения
+        const embedUrl = getEmbedUrl(videoPath);
+        videoSource.src = embedUrl;
         videoPlayer.load();
         
         currentEpisodeData = { season, episode, title };
         
         videoPlayer.addEventListener('error', () => {
-            episodeTitle.innerHTML += '<br><span style="color: #ff6b6b;">⚠️ Видео не найдено</span>';
+            episodeTitle.innerHTML += '<br><span style="color: #ff6b6b;">⚠️ Ошибка загрузки видео. Проверьте ссылку Google Drive</span>';
             downloadBtn.disabled = true;
             copyLinkBtn.disabled = true;
         });
@@ -409,7 +433,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
     }
     
-    // Функция скачивания с выбором качества и кнопкой закрытия
     function downloadWithQuality() {
         if (!currentEpisodeData) return;
         
@@ -446,8 +469,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const quality = btn.dataset.quality;
                     const videoPath = episodesData.getVideoPath(currentEpisodeData.season, currentEpisodeData.episode, quality);
                     if (videoPath) {
+                        const downloadUrl = getDownloadUrl(videoPath);
                         const link = document.createElement('a');
-                        link.href = videoPath;
+                        link.href = downloadUrl;
                         link.download = `${currentEpisodeData.season}_series_${currentEpisodeData.episode}_${quality}.mp4`;
                         link.click();
                         showNotification(`📥 Скачивание ${quality} началось...`);
@@ -464,8 +488,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             const videoPath = episodesData.getVideoPath(currentEpisodeData.season, currentEpisodeData.episode, currentQuality);
             if (videoPath) {
+                const downloadUrl = getDownloadUrl(videoPath);
                 const link = document.createElement('a');
-                link.href = videoPath;
+                link.href = downloadUrl;
                 link.download = `${currentEpisodeData.season}_series_${currentEpisodeData.episode}_${currentQuality}.mp4`;
                 link.click();
                 showNotification(`📥 Скачивание ${currentQuality} началось...`);
