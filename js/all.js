@@ -19,7 +19,7 @@ const episodesData = {
                         "720p": { file: "ser01_720p.mp4", size: "450 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_720p" },
                         "480p": { file: "ser01_480p.mp4", size: "250 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_480p" },
                         "360p": { file: "seas01_ser01_360p.mp4", size: "101 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_360p" },
-                        "240p": { file: "seas01_ser01_240p.mp4", size: "59.3 MB", path: "https://drive.google.com/uc?export=download&id=ТВОЙ_ID_240p" }
+                        "240p": { file: "seas01_ser01_240p.mp4", size: "59.3 MB", path: "https://drive.google.com/uc?export=download&id=1FOG_AuESc-KvuhU-D343fAPubdFj_aXW" }
                     }
                 },
                 { 
