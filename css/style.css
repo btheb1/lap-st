@@ -1,0 +1,197 @@
+/* Группа кнопок */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.download-btn, .copy-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+}
+
+.download-btn {
+    background: linear-gradient(135deg, #6c5ce7, #a55de7);
+    color: white;
+}
+
+.copy-btn {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    color: white;
+}
+
+.download-btn:hover, .copy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Уведомление о продолжении просмотра */
+.resume-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #1e1e1e;
+    border: 2px solid #6c5ce7;
+    border-radius: 12px;
+    padding: 0;
+    z-index: 2000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    min-width: 300px;
+}
+
+.resume-notification.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.resume-content {
+    padding: 24px;
+}
+
+.resume-content p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.resume-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.resume-yes, .resume-no {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.resume-yes {
+    background: #6c5ce7;
+    color: white;
+}
+
+.resume-no {
+    background: #2c2c2c;
+    color: #e0e0e0;
+}
+
+.resume-yes:hover, .resume-no:hover {
+    transform: translateY(-2px);
+}
+
+/* Уведомление о копировании ссылки */
+.copy-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #1e1e1e;
+    border: 2px solid #00cec9;
+    border-radius: 12px;
+    padding: 0;
+    z-index: 2000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    min-width: 320px;
+}
+
+.copy-notification.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.copy-content {
+    padding: 24px;
+}
+
+.copy-content p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.copy-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-direction: column;
+}
+
+.copy-with-time, .copy-without-time {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.copy-with-time {
+    background: #00cec9;
+    color: #1e1e1e;
+}
+
+.copy-without-time {
+    background: #2c2c2c;
+    color: #e0e0e0;
+}
+
+.copy-with-time:hover, .copy-without-time:hover {
+    transform: translateY(-2px);
+}
+
+/* Индикатор прогресса на кнопках серий */
+.episode-btn {
+    position: relative;
+}
+
+.episode-btn.has-progress {
+    border-color: #6c5ce7;
+    background: #1e1a2f;
+}
+
+.progress-icon {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-size: 10px;
+    color: #6c5ce7;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .download-btn, .copy-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .resume-notification, .copy-notification {
+        width: 90%;
+        min-width: auto;
+    }
+    
+    .resume-buttons, .copy-buttons {
+        flex-direction: column;
+    }
+}
